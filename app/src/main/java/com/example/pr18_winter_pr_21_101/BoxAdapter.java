@@ -1,6 +1,6 @@
 package com.example.pr18_winter_pr_21_101;
 
-import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class BoxAdapter extends BaseAdapter {
     Context ctx;

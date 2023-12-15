@@ -1,5 +1,4 @@
 package com.example.pr18_winter_pr_21_101;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -118,3 +117,4 @@ public class DB2 {
     }
 
 }
+

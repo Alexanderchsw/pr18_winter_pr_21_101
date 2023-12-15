@@ -1,17 +1,19 @@
 package com.example.pr18_winter_pr_21_101;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,35 +22,26 @@ import java.util.Map;
 
 public class MainActivity2 extends AppCompatActivity {
 
-    // имена атрибутов для Map
+    private GestureDetector gestureDetector;
     final String ATTRIBUTE_NAME_TEXT = "text";
     final String ATTRIBUTE_NAME_VALUE = "value";
     final String ATTRIBUTE_NAME_IMAGE = "image";
-
-    // картинки для отображения динамики
     final int positive = android.R.drawable.arrow_up_float;
     final int negative = android.R.drawable.arrow_down_float;
-
     ListView lvSimple;
-    Button btn2;
-
-    /** Called when the activity is first created. */
+    Button btn;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        btn2=(Button)findViewById(R.id.btn2);
-        btn2.setOnClickListener(new View.OnClickListener() {
+        btn=findViewById(R.id.btn);
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(MainActivity2.this, MainActivity3.class);
                 startActivity(intent);
             }
         });
-
-        // массив данных
         int[] values = { 8, 4, -3, 2, -5, 0, 3, -6, 1, -1 };
-
-        // упаковываем данные в понятную для адаптера структуру
         ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>(
                 values.length);
         Map<String, Object> m;
@@ -62,20 +55,44 @@ public class MainActivity2 extends AppCompatActivity {
             m.put(ATTRIBUTE_NAME_IMAGE, img);
             data.add(m);
         }
-
-        // массив имен атрибутов, из которых будут читаться данные
         String[] from = { ATTRIBUTE_NAME_TEXT, ATTRIBUTE_NAME_VALUE,
                 ATTRIBUTE_NAME_IMAGE };
-        // массив ID View-компонентов, в которые будут вставлять данные
         int[] to = { R.id.tvText, R.id.tvValue, R.id.ivImg };
-
-        // создаем адаптер
         MySimpleAdapter sAdapter = new MySimpleAdapter(this, data,
                 R.layout.item2, from, to);
-
-        // определяем список и присваиваем ему адаптер
-        lvSimple = (ListView) findViewById(R.id.lvSimple);
+        lvSimple = findViewById(R.id.lvSimple);
         lvSimple.setAdapter(sAdapter);
+
+        //свайп
+        gestureDetector = new GestureDetector(this, new SwipeGestureListener());
+    }
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    private class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffY = event2.getY() - event1.getY();
+            float diffX = event2.getX() - event1.getX();
+
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                if (diffX < 0) {
+
+                    Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
+                    startActivity(intent);
+                    return true;
+                }else {
+                    Intent intent = new Intent(MainActivity2.this, MainActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     class MySimpleAdapter extends SimpleAdapter {
@@ -88,9 +105,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         @Override
         public void setViewText(TextView v, String text) {
-            // метод супер-класса, который вставляет текст
             super.setViewText(v, text);
-            // если нужный нам TextView, то разрисовываем
             if (v.getId() == R.id.tvValue) {
                 int i = Integer.parseInt(text);
                 if (i < 0) v.setTextColor(Color.RED); else
@@ -100,9 +115,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         @Override
         public void setViewImage(ImageView v, int value) {
-            // метод супер-класса
             super.setViewImage(v, value);
-            // разрисовываем ImageView
             if (value == negative) v.setBackgroundColor(Color.RED); else
             if (value == positive) v.setBackgroundColor(Color.GREEN);
         }

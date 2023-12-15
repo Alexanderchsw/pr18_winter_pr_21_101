@@ -1,7 +1,6 @@
 package com.example.pr18_winter_pr_21_101;
 
 public class Product {
-
     String name;
     int price;
     int image;
